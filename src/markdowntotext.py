@@ -1,5 +1,5 @@
 
-
+import re
 from textnode import *
 
 
@@ -11,9 +11,20 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             if spl[0]==old.text:
                 raise Exception ("Delimeter not found")
             else:
-                x.append(TextNode(spl[0],TextType.Normal))
-                x.append(TextNode(spl[1],text_type))
-                x.append(TextNode(spl[2],TextType.Normal))
+                i=0
+                while i<len(spl):
+                    if i%2==0:
+                        x.append(TextNode(spl[i],"TextType.Normal"))
+                        i+=1
+                    else:
+                        x.append(TextNode(spl[i],text_type))
+                        i+=1
         else:
             x.append(old)
     return x
+
+def extract_markdown_images(text):
+    return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)",text)
+
+def extract_markdown_links(text):
+    return  re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)",text)

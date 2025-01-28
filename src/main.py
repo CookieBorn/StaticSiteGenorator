@@ -10,10 +10,12 @@ from markdowntotext import *
 
 
 def main():
-    node = TextNode("This is text with a `code block` word", TextType.Code)
-    node2 = TextNode("This is text with a `code block 2` word", TextType.Normal)
-    new_nodes = split_nodes_delimiter([node, node2], "`", TextType.Code)
-    print(new_nodes)
+    text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+    print(extract_markdown_images(text))
+    # [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+    text2 = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+    print(extract_markdown_links(text2))
+    # [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
 
 print("hello world")
 main()

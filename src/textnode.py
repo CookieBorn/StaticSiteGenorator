@@ -24,17 +24,17 @@ class TextNode:
 
     def text_node_to_html_node(self):
         match self.text_type:
-            case TextType.Normal, "normal":
+            case TextType.Normal | "normal":
                 return LeafNode(value=self.text)
-            case TextType.Bold, "bold":
+            case TextType.Bold | "bold":
                 return LeafNode(tag="b", value=self.text)
-            case TextType.Italic, "italic":
+            case TextType.Italic | "italic":
                 return LeafNode(tag="i", value=self.text)
-            case TextType.Code, "code":
+            case TextType.Code | "code":
                 return LeafNode(tag="code", value=self.text)
-            case TextType.Links, "links":
+            case TextType.Links | "links":
                 return LeafNode(tag="a", value=self.text, props="href")
-            case TextType.Images, "images":
+            case TextType.Images | "images":
                 return LeafNode(tag="img",value="", props={"src":self.url, "alt":self.text})
             case _:
                 raise Exception ("Missing text type")
