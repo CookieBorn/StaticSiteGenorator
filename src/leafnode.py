@@ -1,7 +1,7 @@
 from htmlnode import HTMLNODE
 
 class LeafNode(HTMLNODE):
-    def __init__(self, tag, value, props=None):
+    def __init__(self, tag=None, value=None, props=None):
         super().__init__(tag=tag, value=value, props=props, children=None)
 
 
@@ -17,3 +17,6 @@ class LeafNode(HTMLNODE):
             return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
                    # Otherwise, render tag with just the value inside
         return f"<{self.tag}>{self.value}</{self.tag}>"
+
+    def __repr__(self):
+         return f"LeafNode({self.tag}, {self.value}, {self.props})"

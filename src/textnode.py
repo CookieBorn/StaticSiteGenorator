@@ -1,5 +1,6 @@
 from enum import Enum
-from typing_extensions import Text
+
+from leafnode import LeafNode
 
 class TextType(Enum):
     Normal="normal"
@@ -21,4 +22,19 @@ class TextNode:
     def __repr__(self):
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
 
-        pass
+    def text_node_to_html_node(self):
+        match self.text_type:
+            case TextType.Normal:
+                return LeafNode(value=self.text)
+            case TextType.Bold:
+                return LeafNode(tag="b", value=self.text)
+            case TextType.Italic:
+                return LeafNode(tag="i", value=self.text)
+            case TextType.Code:
+                return LeafNode(tag="code", value=self.text)
+            case TextType.Links:
+                return LeafNode(tag="a", value=self.text, props="href")
+            case TextType.Images:
+                return LeafNode(tag="img",value="", props={"src":self.url, "alt":self.text})
+            case _:
+                raise Exception ("Missing text type")
