@@ -10,12 +10,20 @@ from markdowntotext import *
 
 
 def main():
-    text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
-    print(extract_markdown_images(text))
-    # [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
-    text2 = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
-    print(extract_markdown_links(text2))
-    # [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+    node = TextNode(
+        "This is text with a link ![to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev) too ![to you](https://www.youtube.com/@bootdotdev) three ![to tube](https://www.youtube.com/@bootdotdev)",
+        TextType.Normal,
+    )
+    new_nodes = split_nodes_image([node])
+    print(new_nodes)
+    # [
+    #     TextNode("This is text with a link ", TextType.TEXT),
+    #     TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+    #     TextNode(" and ", TextType.TEXT),
+    #     TextNode(
+    #         "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+    #     ),
+    # ]
 
 print("hello world")
 main()

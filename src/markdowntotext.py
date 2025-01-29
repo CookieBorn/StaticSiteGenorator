@@ -23,6 +23,41 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             x.append(old)
     return x
 
+def split_nodes_image(old_nodes):
+    x=list()
+    i=0
+    k=1
+    for old in old_nodes:
+        images=extract_markdown_images(old.text)
+        for image in images:
+            sections = old.text.split(f"![{image[0]}]({image[1]})", 1)
+            if i==0:
+                x.append(TextNode(f'"{sections[i]}"',TextType.Normal))
+                x.append(TextNode(f'"{image[0]}"',TextType.Links, f'"{image[1]}"'))
+                i+=1
+            else:
+                x.append(TextNode(f'"{sections[0].split(")")[-1]}"',TextType.Normal))
+                x.append(TextNode(f'"{image[0]}"',TextType.Links, f'"{image[1]}"'))
+
+    return x
+def split_nodes_link(old_nodes):
+    x=list()
+    i=0
+    for old in old_nodes:
+        images=extract_markdown_links(old.text)
+        for image in images:
+            sections = old.text.split(f"[{image[0]}]({image[1]})", 1)
+            if i==0:
+                x.append(TextNode(f'"{sections[i]}"',TextType.Normal))
+                x.append(TextNode(f'"{image[0]}"',TextType.Links, f'"{image[1]}"'))
+                i+=1
+            else:
+                x.append(TextNode(f'"{sections[0].split(")")[1]}"',TextType.Normal))
+                x.append(TextNode(f'"{image[0]}"',TextType.Links, f'"{image[1]}"'))
+
+
+    return x
+
 def extract_markdown_images(text):
     return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)",text)
 
