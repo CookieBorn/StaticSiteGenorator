@@ -1,65 +1,88 @@
 
 import re
+from tkinter import Image
 from textnode import *
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    x=list()
+    result = []
     for old in old_nodes:
-        if old.text_type == TextType.Normal or old.text_type=="normal":
-            spl=old.text.split(delimiter)
-            if spl[0]==old.text:
-                raise Exception ("Delimeter not found")
-            else:
-                i=0
-                while i<len(spl):
-                    if i%2==0:
-                        x.append(TextNode(spl[i],"TextType.Normal"))
-                        i+=1
-                    else:
-                        x.append(TextNode(spl[i],text_type))
-                        i+=1
+        if old.text_type == TextType.TEXT:  # Use correct enum
+            parts = old.text.split(delimiter)
+            if len(parts) == 1:  # No delimiter found
+                result.append(old)
+                continue
+
+            for i in range(len(parts)):
+                if i % 2 == 0:
+                    if parts[i] != "":  # Only append non-empty strings
+                        result.append(TextNode(parts[i], TextType.TEXT))
+                else:
+                    result.append(TextNode(parts[i], text_type))
         else:
-            x.append(old)
-    return x
+            result.append(old)
+    return result
 
 def split_nodes_image(old_nodes):
-    x=list()
-    i=0
-    k=1
+    result = []
     for old in old_nodes:
-        images=extract_markdown_images(old.text)
-        for image in images:
-            sections = old.text.split(f"![{image[0]}]({image[1]})", 1)
-            if i==0:
-                x.append(TextNode(f'"{sections[i]}"',TextType.Normal))
-                x.append(TextNode(f'"{image[0]}"',TextType.Links, f'"{image[1]}"'))
-                i+=1
-            else:
-                x.append(TextNode(f'"{sections[0].split(")")[-1]}"',TextType.Normal))
-                x.append(TextNode(f'"{image[0]}"',TextType.Links, f'"{image[1]}"'))
+        if old.text_type == TextType.TEXT:
+            images = extract_markdown_images(old.text)
+            if not images:  # If no images found, keep original node
+                result.append(old)
+                continue
 
-    return x
+            sections = old.text
+            for img_text, img_url in images:
+                parts = sections.split(f"![{img_text}]({img_url})", 1)
+                if parts[0]:  # Add text before image
+                    result.append(TextNode(parts[0], TextType.TEXT))
+                result.append(TextNode(img_text, TextType.Images, img_url))
+                sections = parts[1] if len(parts) > 1 else ""
+
+            if sections:  # Add remaining text
+                result.append(TextNode(sections, TextType.TEXT))
+        else:
+            result.append(old)
+    return result
+
 def split_nodes_link(old_nodes):
-    x=list()
-    i=0
+    result = []
     for old in old_nodes:
-        images=extract_markdown_links(old.text)
-        for image in images:
-            sections = old.text.split(f"[{image[0]}]({image[1]})", 1)
-            if i==0:
-                x.append(TextNode(f'"{sections[i]}"',TextType.Normal))
-                x.append(TextNode(f'"{image[0]}"',TextType.Links, f'"{image[1]}"'))
-                i+=1
-            else:
-                x.append(TextNode(f'"{sections[0].split(")")[1]}"',TextType.Normal))
-                x.append(TextNode(f'"{image[0]}"',TextType.Links, f'"{image[1]}"'))
+        if old.text_type == TextType.TEXT:
+            images = extract_markdown_links(old.text)
+            if not images:  # If no images found, keep original node
+                result.append(old)
+                continue
 
+            sections = old.text
+            for img_text, img_url in images:
+                parts = sections.split(f"[{img_text}]({img_url})", 1)
+                if parts[0]:  # Add text before image
+                    result.append(TextNode(parts[0], TextType.TEXT))
+                result.append(TextNode(img_text, TextType.Links, img_url))
+                sections = parts[1] if len(parts) > 1 else ""
 
-    return x
+            if sections:  # Add remaining text
+                result.append(TextNode(sections, TextType.TEXT))
+        else:
+            result.append(old)
+    return result
 
 def extract_markdown_images(text):
     return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)",text)
 
 def extract_markdown_links(text):
     return  re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)",text)
+
+def text_to_textnodes(text):
+    y=split_nodes_delimiter([TextNode(text,TextType.TEXT)],"**",TextType.Bold)
+    y=split_nodes_delimiter(y,"*",TextType.Italic)
+    y=split_nodes_delimiter(y,"`",TextType.Code)
+    y=split_nodes_link(y)
+    y=split_nodes_image(y)
+    return y
+
+def markdown_to_blocks(markdown):
+    markdown.split("#")
+    return
