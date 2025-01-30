@@ -84,5 +84,14 @@ def text_to_textnodes(text):
     return y
 
 def markdown_to_blocks(markdown):
-    markdown.split("#")
+    blocks=markdown.split("\n\n")
+    x=0
+    for block in blocks:
+        blocks[x]=block.strip()
+        if block.isspace():
+            del blocks[x]
+        x+=1
+    return blocks
+
+def block_to_block_type(block):
     return
