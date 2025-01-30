@@ -94,4 +94,15 @@ def markdown_to_blocks(markdown):
     return blocks
 
 def block_to_block_type(block):
-    return
+    if block[0]=="#":
+        return "heading"
+    elif block[:3]=="```" and block[-3:]=="```":
+        return "code"
+    elif block[0]==">":
+        return "quote"
+    elif block[:2]=="* " or block[:2]=="- ":
+        return "unordered list"
+    elif block[:2]=="1.":
+        return "ordered list"
+    else:
+        return "normal"

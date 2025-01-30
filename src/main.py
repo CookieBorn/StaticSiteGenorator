@@ -10,8 +10,9 @@ from markdowntotext import *
 
 
 def main():
-    text = "# This is a heading\n\n   This is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item\n\n "
-    print(markdown_to_blocks(text))
+    text ="```223```"
+    print(text[:3])
+    print(text[-3])
 
 
 print("hello world")
