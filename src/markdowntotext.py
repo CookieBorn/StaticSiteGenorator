@@ -1,6 +1,6 @@
 
 import re
-from tkinter import Image
+from htmlnode import HTMLNODE
 from textnode import *
 
 
@@ -106,3 +106,62 @@ def block_to_block_type(block):
         return "ordered list"
     else:
         return "normal"
+
+def markdown_to_html_node(markdown):
+    blocks=markdown_to_blocks(markdown)
+    out=[]
+    for block in blocks:
+        type=block_to_block_type(block)
+        if type=="heading":
+            x=block[:6].count("#")
+            child=text_to_children(block[x+1:])
+            block_html=HTMLNODE(f"h{x}",child)
+            out.append(block_html)
+        if type=="code":
+            split=block.split("\n")
+            code="\n".join(split[1:-1])
+            innerblock=HTMLNODE("code", [LeafNode(value=code)])
+            block_html=HTMLNODE("pre",[innerblock])
+            out.append(block_html)
+        if type=="quote":
+            child=text_to_children(block[2:])
+            block_html=HTMLNODE("blockquote", child)
+            out.append(block_html)
+        if type=="unordered list":
+            li=block.split("\n")
+            outlist=[]
+            for l in li:
+                html=text_to_children(l[2:])
+                node=HTMLNODE("li",html)
+                outlist.append(node)
+            block_html=HTMLNODE("ul",outlist)
+            out.append(block_html)
+        if type=="ordered list":
+            li=block.split("\n")
+            outlist=[]
+            for l in li:
+                html=text_to_children(l[2:])
+                node=HTMLNODE("li",html)
+                outlist.append(node)
+            block_html=HTMLNODE("ol",outlist)
+            out.append(block_html)
+        if type=="normal":
+            child=text_to_children(block)
+            block_html=HTMLNODE("p", child)
+            out.append(block_html)
+    return HTMLNODE("div",out)
+
+def text_to_children(block):
+   lines=block.split("\n")
+   text_nodes=[]
+   for b in lines:
+       text_nodes.append(text_to_textnodes(b))
+   html_nodes=[]
+   for text in text_nodes:
+       for t in text:
+           html_nodes.append(t.text_node_to_html_node())
+   html_final_nodes=[]
+   for html in html_nodes:
+        if not (html.value is None or html.value.isspace()):
+            html_final_nodes.append(html)
+   return html_final_nodes
