@@ -1,6 +1,7 @@
 
 import re
 from htmlnode import HTMLNODE
+from parentnode import ParentNode
 from textnode import *
 
 
@@ -115,47 +116,48 @@ def markdown_to_html_node(markdown):
         if type=="heading":
             x=block[:6].count("#")
             child=text_to_children(block[x+1:])
-            block_html=HTMLNODE(f"h{x}",child)
+            block_html=ParentNode(f"h{x}",child)
             out.append(block_html)
         if type=="code":
             split=block.split("\n")
             code="\n".join(split[1:-1])
-            innerblock=HTMLNODE("code", [LeafNode(value=code)])
-            block_html=HTMLNODE("pre",[innerblock])
+            innerblock=ParentNode("code", [LeafNode(value=code)])
+            block_html=ParentNode("pre",[innerblock])
             out.append(block_html)
         if type=="quote":
             child=text_to_children(block[2:])
-            block_html=HTMLNODE("blockquote", child)
+            block_html=ParentNode("blockquote", child)
             out.append(block_html)
         if type=="unordered list":
             li=block.split("\n")
             outlist=[]
             for l in li:
                 html=text_to_children(l[2:])
-                node=HTMLNODE("li",html)
+                node=ParentNode("li",html)
                 outlist.append(node)
-            block_html=HTMLNODE("ul",outlist)
+            block_html=ParentNode("ul",outlist)
             out.append(block_html)
         if type=="ordered list":
             li=block.split("\n")
             outlist=[]
             for l in li:
                 html=text_to_children(l[2:])
-                node=HTMLNODE("li",html)
+                node=ParentNode("li",html)
                 outlist.append(node)
-            block_html=HTMLNODE("ol",outlist)
+            block_html=ParentNode("ol",outlist)
             out.append(block_html)
         if type=="normal":
             child=text_to_children(block)
-            block_html=HTMLNODE("p", child)
+            block_html=ParentNode("p", child)
             out.append(block_html)
-    return HTMLNODE("div",out)
+    return ParentNode("div",out)
 
 def text_to_children(block):
    lines=block.split("\n")
    text_nodes=[]
    for b in lines:
-       text_nodes.append(text_to_textnodes(b))
+       c=b.strip()
+       text_nodes.append(text_to_textnodes(c))
    html_nodes=[]
    for text in text_nodes:
        for t in text:
@@ -165,3 +167,10 @@ def text_to_children(block):
         if not (html.value is None or html.value.isspace()):
             html_final_nodes.append(html)
    return html_final_nodes
+
+def extract_title(markdown):
+    blocks=markdown.split("\n")
+    for block in blocks:
+        if block[:2]=="# ":
+            return block[2:].strip()
+    raise ValueError("No Heading")

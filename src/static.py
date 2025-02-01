@@ -1,6 +1,8 @@
+
 import shutil
 import os
 from posix import mkdir
+from markdowntotext import *
 
 def clear_copy(clear_path, copy_path):
     if os.path.exists(clear_path):
@@ -15,3 +17,20 @@ def clear_copy(clear_path, copy_path):
         else:
             shutil.copy(x,os.path.join(clear_path,p))
     return
+
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(template_path) as f:
+        text_temp = f.read()
+    with open(from_path) as x:
+        text_from=x.read()
+    content=markdown_to_html_node(text_from)
+    html=content.to_html()
+    title=extract_title(text_from)
+    text_temp=text_temp.replace("{{ Title }}",title)
+    text_temp=text_temp.replace("{{ Content }}",html)
+    destpath=os.path.dirname(dest_path)
+    os.makedirs(destpath, exist_ok=True)
+    with open(dest_path,"w") as new:
+        new.write(text_temp)

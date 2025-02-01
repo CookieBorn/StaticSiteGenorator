@@ -33,7 +33,7 @@ class TextNode:
             case TextType.Code | "code":
                 return LeafNode(tag="code", value=self.text)
             case TextType.Links | "links":
-                return LeafNode(tag="a", value=self.text, props="href")
+                return LeafNode(tag="a", value=self.text, props={"href":self.url})
             case TextType.Images | "images":
                 return LeafNode(tag="img",value="", props={"src":self.url, "alt":self.text})
             case _:
