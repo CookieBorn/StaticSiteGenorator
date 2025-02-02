@@ -11,7 +11,7 @@ from static import *
 
 def main():
     clear_copy("./public/","./static")
-    generate_page("./content/index.md", "./template.html", "./public/index.html")
+    generate_pages_recursive("./content", "./template.html", "./public")
 
 
 
