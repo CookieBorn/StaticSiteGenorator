@@ -1,4 +1,5 @@
 
+import sys
 from htmlnode import HTMLNODE
 import parentnode
 from textnode import *
@@ -10,8 +11,11 @@ from static import *
 
 
 def main():
-    clear_copy("./public/","./static")
-    generate_pages_recursive("./content", "./template.html", "./public")
+    basepath = sys.argv[1]
+    if len(basepath)==0:
+        basepath="/"
+    clear_copy("./docs/","./static")
+    generate_pages_recursive("./content", "./template.html","./docs/", basepath)
 
 
 
